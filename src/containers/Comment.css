@@ -1,0 +1,84 @@
+.commentListGrid {
+  display: grid;
+  grid-row-gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 25px;
+  font-family: 'Merriweather', serif;
+}
+
+.contain {
+  width: 60%;
+}
+
+.comment {
+  border: solid thin #ccc;
+  border-radius: 6px;
+  display: grid;
+  width: 60%;
+  grid-template-columns: 15% 65% 15%;
+  grid-column-gap: 2.5%;
+  grid-template-rows: 100%;
+}
+
+.comment .avatarLocation {
+  grid-column-start: 1;
+  background-color: #ccc;
+  border-radius: 5px 0px 0px 5px;
+}
+
+.avatarLocation .glyphicon {
+  color: darkblue;
+  padding-left: 5px;
+  padding-top: 10px;
+}
+
+.comment .commentScore {
+  grid-column-start: 3;
+  background-color: #ccc;
+  border-radius: 0px 5px 5px 0px;
+}
+
+.viewThread {
+  padding: 1rem;
+  border: .2rem solid #ececec;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  min-height: 300px;
+  font-family: 'Merriweather', serif;
+  background-color: white;
+  margin-top: 2.5%;
+  display: grid;
+  grid-template-rows: 20% 20% 20% 20% 20%;
+}
+
+.viewThread p {
+  grid-row-start: 2;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.row {
+  display: block;
+}
+
+.column {
+  display: inline-block;
+}
+
+.loadingPost {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.innerLoader {
+  display: inline-block;
+}
+
+.spinner {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
