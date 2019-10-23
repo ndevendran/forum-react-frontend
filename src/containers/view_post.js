@@ -141,10 +141,22 @@ class ViewPost extends React.Component {
       return (
           <div className="row">
             <div className="col">
-              <div className="viewThread">
-                <h3>{this.state.userPost.title}</h3>
-                <p>{this.state.userPost.content}</p>
+            <div class="postContainer">
+              <div class="sidebar">
+                <img class="avatar" src={require("./avatar_test_02.jpg")}></img>
+                <div class="likes">24 Likes</div>
               </div>
+              <div class="innerContainer">
+                <div class="postedBy">Posted by {this.state.poster} {new Date(this.state.userPost.createdAt).toLocaleString()}</div>
+                <div class="header">{this.state.userPost.title}</div>
+                <div class="body">
+                  {this.state.userPost.content}
+                </div>
+                <div class="footer">
+                  <div>Like</div><div>Reply</div><div onClick={this.toggleEditPost}>Edit</div><div>Delete</div><div>Report</div>
+                </div>
+              </div>
+            </div>
               <div>
                 <EditPost content={this.state.userPost.content}
                   postTitle={this.state.userPost.title}

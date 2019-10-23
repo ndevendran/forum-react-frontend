@@ -53,10 +53,6 @@ class EditPost extends React.Component {
   render() {
     return (
       <>
-        <Button variant="primary" onClick={this.props.toggleEditPost}>
-          Edit Post
-        </Button>
-
         <Modal show={this.props.isEditing} onHide={this.props.toggleEditPost}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Post</Modal.Title>

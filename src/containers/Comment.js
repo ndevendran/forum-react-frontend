@@ -14,16 +14,20 @@ class Comment extends React.Component {
 
   render() {
     return(
-      <div className="comment col align-self-start">
-        <div className="avatarLocation">
-          <h6>said at {this.state.createdAt}</h6>
+      <div class="commentContainer">
+        <div class="sidebar">
+          <img class="avatar" src={require('./avatar_test_01.jpg')}></img>
+          <div class="likes">24 Likes</div>
         </div>
-        <div className="theMeat">
-          <h5>{this.state.username} says</h5>
-          <p>{this.state.content}</p>
-          <UtilityBelt functions={this.props.functions} />
+        <div class="comment">
+          <div class="header"><div>{this.state.username}</div><div>{this.state.createdAt}</div></div>
+          <div class="body">
+              {this.state.content}
+          </div>
+          <div class="footer">
+            <div class="vote">Like</div><div class="reply">Reply</div><div class="edit">Edit</div>
+          </div>
         </div>
-        <div className="commentScore"></div>
       </div>
     )
   }
