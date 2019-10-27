@@ -1,6 +1,5 @@
 import React from "react";
 import {Modal, Form, Button, FormGroup} from 'react-bootstrap';
-import UtilityBelt from '../components/utilityBelt.js';
 
 class EditPost extends React.Component {
   constructor(props) {

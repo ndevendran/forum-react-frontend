@@ -1,10 +1,9 @@
 import React from 'react';
-import { Auth, API } from 'aws-amplify';
+import { Auth, API, Storage } from 'aws-amplify';
 import { Glyphicon, Row, Col, Grid, Button } from "react-bootstrap";
 import Comment from './Comment.js';
 import EditPost from './EditPost.js';
 import './Comment.css';
-import UtilityBelt from '../components/utilityBelt';
 
 class ViewPost extends React.Component {
   constructor(props) {
@@ -22,7 +21,8 @@ class ViewPost extends React.Component {
       },
       postFunctions: {
         'edit': this.toggleEditPost
-      }
+      },
+      avatarUrl: '',
     }
 
     this.postComment = this.postComment.bind(this);
@@ -32,13 +32,6 @@ class ViewPost extends React.Component {
     this.saveEdits = this.saveEdits.bind(this);
     this.editComment = this.editComment.bind(this);
     this.toggleEditPost = this.toggleEditPost.bind(this);
-
-    Auth.currentAuthenticatedUser({
-      bypassCache: false,
-    }).then(async user => {
-      this.setState({poster: user.username});
-    });
-
   }
 
   saveEdits(newTitle, newContent) {
@@ -60,6 +53,10 @@ class ViewPost extends React.Component {
 
   toggleEditPost() {
     this.setState({editing: !this.state.editing});
+  }
+
+  toggleEditComment() {
+    this.setState({editingComment: !this.state.editingComment});
   }
 
   editComment() {
@@ -106,9 +103,21 @@ class ViewPost extends React.Component {
     this.state.isLoading = true;
     let postId = this.state.postId;
     let apiUrl = '/forum/' + postId;
+
+    await Auth.currentAuthenticatedUser({
+      bypassCache: false,
+    }).then(async user => {
+      this.setState({poster: user.username});
+    });
+
     try {
       const userPost = await API.get('forum', apiUrl);
       const myComments = await this.listComments();
+      const avatarKey = userPost.posterUsername + '_user_avatar';
+      console.log(userPost);
+      Storage.vault.get(avatarKey)
+        .then(url => this.setState({avatarUrl: url}))
+        .catch(err => console.log(err));
       this.setState({
         userPost: userPost,
         comments: myComments,
@@ -143,7 +152,7 @@ class ViewPost extends React.Component {
             <div className="col">
             <div class="postContainer">
               <div class="sidebar">
-                <img class="avatar" src={require("./avatar_test_02.jpg")}></img>
+                <img class="avatar" src={this.state.avatarUrl}></img>
                 <div class="likes">24 Likes</div>
               </div>
               <div class="innerContainer">
@@ -172,7 +181,8 @@ class ViewPost extends React.Component {
                     (comment,i) => {
                       return <Comment key={comment.commentId} createdAt={comment.createdAt}
                               username={comment.username} content={comment.content}
-                              functions={this.state.commentFunctions}
+                              functions={this.state.commentFunctions} postId={this.state.postId}
+                              commentId={comment.commentId}
                               />;
                     }
                 )}

@@ -6,6 +6,7 @@ import ForumThreadList from './forum_thread.js';
 import Login from './Login.js';
 import NotFound from './not_found.js';
 import Signup from './Signup.js';
+import UserProfile from './UserProfile.js';
 
 class Routes extends React.Component {
 
@@ -23,6 +24,8 @@ render () {
       />
       <Route path="/post/create" component={CreatePost} />
       <Route path="/view/:id" component={ViewPost} />
+      <Route path="/profile" component={UserProfile} />
+      />
       <Route component={NotFound} />
     </Switch>
   )

@@ -14,6 +14,7 @@ class App extends Component {
     this.state = {
       isAuthenticated: false,
       isAuthenticating: true,
+      username: '',
     };
   }
 
@@ -62,6 +63,9 @@ class App extends Component {
             <Nav>
                 <NavItem>
                   <Link to="/post/create">Create Post</Link>
+                </NavItem>
+                <NavItem>
+                  <Link to="/profile">Profile</Link>
                 </NavItem>
             </Nav>
             <Nav pullRight>
