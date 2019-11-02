@@ -4,6 +4,8 @@ import { Glyphicon, Row, Col, Grid, Button } from "react-bootstrap";
 import Comment from './Comment.js';
 import EditPost from './EditPost.js';
 import './Comment.css';
+import './viewPost.css';
+import PostComment from '../components/PostComment.js'
 
 class ViewPost extends React.Component {
   constructor(props) {
@@ -19,10 +21,11 @@ class ViewPost extends React.Component {
       currentComment: '',
     }
 
-    this.postComment = this.postComment.bind(this);
-    this.updateComment = this.updateComment.bind(this);
-    this.addComment = this.addComment.bind(this);
+    // this.postComment = this.postComment.bind(this);
+    // this.updateComment = this.updateComment.bind(this);
+    // this.addComment = this.addComment.bind(this);
 
+    this.appendComment = this.appendComment.bind(this);
     this.listComments = this.listComments.bind(this);
     this.savePostEdits = this.savePostEdits.bind(this);
     this.toggleEditPost = this.toggleEditPost.bind(this);
@@ -49,37 +52,12 @@ class ViewPost extends React.Component {
     this.setState({editing: !this.state.editing});
   }
 
-  //TODO: Transform Comment Creation Into Promise Chain
-  updateComment(e) {
-    this.setState({
-      currentComment: e.target.value,
-    })
-  }
-
-  addComment(body) {
-    let postId = this.state.postId;
-    let url = "/comment/" + postId;
-    try {
-      return API.post("forum", url, {
-        body: body
-      });
-    } catch (e) {
-      alert(e.message);
-    }
-  }
-
-  async postComment() {
-    let userPost = this.state.userPost;
+  appendComment(comment) {
     let comments = this.state.comments;
-    let userComment = {"content": this.state.currentComment, "username": this.state.poster }
-
-    const newComment = await this.addComment(userComment);
-    comments.push(newComment);
+    comments.push(comment);
     this.setState({
-      currentComment: '',
-      userPost: userPost,
-      comments: comments,
-    });
+      comments: comments
+    })
   }
 
   async listComments() {
@@ -124,12 +102,7 @@ class ViewPost extends React.Component {
     if(this.state.isLoading) {
       return (
           <div className="loadingPost">
-            <div className="innerLoader">
-              <h1 className="inline">Loading...</h1>
-              <div className="spinner">
                 <Glyphicon glyph="refresh" className="spinning" />
-              </div>
-            </div>
           </div>
       )
     } else {
@@ -160,8 +133,11 @@ class ViewPost extends React.Component {
                   toggleEditPost={this.toggleEditPost}
                   />
               </div>
-              <textarea value={this.state.currentComment} onChange={this.updateComment} className="form-control" rows="5"></textarea>
-              <button type="button" onClick={()=>this.postComment()} className="btn btn-primary">Post Comment</button>
+              <div>
+                <PostComment poster={this.state.poster} postId={this.state.postId}
+                  appendComment={this.appendComment}
+                />
+              </div>
               <div className="commentListGrid">
                   {this.state.comments.map(
                     (comment,i) => {
