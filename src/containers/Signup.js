@@ -8,7 +8,7 @@ import {
 import { Auth } from "aws-amplify";
 
 import LoaderButton from "../components/LoaderButton";
-import "./Signup.css";
+import "./css/Signup.css";
 
 export default class Signup extends Component {
   constructor(props) {

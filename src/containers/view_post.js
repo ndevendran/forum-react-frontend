@@ -1,10 +1,10 @@
 import React from 'react';
 import { Auth, API, Storage } from 'aws-amplify';
 import { Glyphicon, Row, Col, Grid, Button } from "react-bootstrap";
-import Comment from './Comment.js';
-import EditPost from './EditPost.js';
-import './Comment.css';
-import './viewPost.css';
+import Comment from '../components/Comment.js';
+import EditPost from '../components/EditPost.js';
+import './css/Comment.css';
+import './css/ViewPost.css';
 import PostComment from '../components/PostComment.js'
 
 class ViewPost extends React.Component {

@@ -1,5 +1,5 @@
 import React from 'react';
-import './ForumThreadList.css';
+import './css/ForumThreadList.css';
 import UpvoteModal from '../components/UpvoteDownvote.js';
 import { API } from "aws-amplify";
 import { withRouter } from "react-router-dom";

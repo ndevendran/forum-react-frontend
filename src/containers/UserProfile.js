@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Storage } from "aws-amplify";
 import LoaderButton from "../components/LoaderButton.js"
 import { FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import config from '../config.js';
-import './profile.css';
+import './css/profile.css';
 import { Auth , API } from 'aws-amplify';
 
 class UserProfile extends React.Component {
