@@ -114,7 +114,6 @@ class ViewPost extends React.Component {
       const userPost = await API.get('forum', apiUrl);
       const myComments = await this.listComments();
       const avatarKey = userPost.posterUsername + '_user_avatar';
-      console.log(userPost);
       Storage.vault.get(avatarKey)
         .then(url => this.setState({avatarUrl: url}))
         .catch(err => console.log(err));
