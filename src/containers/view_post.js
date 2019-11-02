@@ -21,31 +21,58 @@ class ViewPost extends React.Component {
       currentComment: '',
     }
 
-    // this.postComment = this.postComment.bind(this);
-    // this.updateComment = this.updateComment.bind(this);
-    // this.addComment = this.addComment.bind(this);
-
     this.appendComment = this.appendComment.bind(this);
     this.listComments = this.listComments.bind(this);
     this.savePostEdits = this.savePostEdits.bind(this);
     this.toggleEditPost = this.toggleEditPost.bind(this);
   }
 
+  // Change savePostEdits into a promise chain with error handling
+  // Sequence will be: checkPermissions, saveEdits, updateState, handleErrors
+
+  checkPermissions(data) {
+    if(this.state.poster === this.state.userPost.posterUsername) {
+      return data;
+    } else {
+      throw new Error("You can only edit your own posts...");
+    }
+  }
+
+  updateState(data) {
+    if(!data.status) {
+      throw new Error("Update Error...")
+    } else {
+      this.setState({
+        userPost: data.post.Attributes
+      });
+    }
+
+  }
+
+  saveEdits(data) {
+    const url = '/forum/' + this.state.postId;
+    return API.put("forum", url, {
+      body: data
+    });
+  }
+
+
+
+  handleErrors(error) {
+    alert(error);
+  }
+
   savePostEdits(newTitle, newContent) {
     const body = {'content': newContent, 'title': newTitle};
-    const url = '/forum/' + this.state.postId;
-    try {
-      API.put("forum", url, {
-        body: body
-      });
-      this.setState({
-        userPost: {'content': newContent, 'title': newTitle}
-      });
-      return true;
-    } catch (e) {
-      alert(e.message);
-      return false;
-    }
+    var promise = new Promise(function(resolve, reject){
+      resolve(body)
+    });
+
+    promise.then(this.checkPermissions.bind(this))
+      .then(this.saveEdits.bind(this))
+      .then(this.updateState.bind(this))
+      .then(this.toggleEditPost.bind(this))
+      .catch(this.handleErrors);
   }
 
   toggleEditPost() {
@@ -115,7 +142,7 @@ class ViewPost extends React.Component {
                 <div class="likes">24 Likes</div>
               </div>
               <div class="innerContainer">
-                <div class="postedBy">Posted by {this.state.poster} {new Date(this.state.userPost.createdAt).toLocaleString()}</div>
+                <div class="postedBy">Posted by {this.state.userPost.posterUsername} {new Date(this.state.userPost.createdAt).toLocaleString()}</div>
                 <div class="header">{this.state.userPost.title}</div>
                 <div class="body">
                   {this.state.userPost.content}
