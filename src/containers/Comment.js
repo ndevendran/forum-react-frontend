@@ -10,7 +10,7 @@ class Comment extends React.Component {
       content: this.props.content,
       username: this.props.username,
       createdAt: new Date(this.props.createdAt).toLocaleString(),
-      editComment: false,
+      editing: false,
       avatarUrl: '',
     }
 
@@ -19,15 +19,15 @@ class Comment extends React.Component {
       .then(url => this.setState({avatarUrl: url}))
       .catch(err => console.log(err));
 
-    this.toggleEditComment = this.toggleEditComment.bind(this);
-    this.updateComment = this.updateComment.bind(this);
+    this.toggleEdit = this.toggleEdit.bind(this);
+    this.updateContent = this.updateContent.bind(this);
   }
 
-  toggleEditComment() {
-    this.setState({editComment: !this.state.editComment});
+  toggleEdit() {
+    this.setState({editing: !this.state.editing});
   }
 
-  updateComment(newValue) {
+  updateContent(newValue) {
     this.setState({content: newValue });
   }
 
@@ -46,11 +46,11 @@ class Comment extends React.Component {
           <div class="footer">
             <div class="vote">Like</div>
             <div class="reply">Reply</div>
-            <div class="edit" onClick={this.toggleEditComment}>Edit</div>
+            <div class="edit" onClick={this.toggleEdit}>Edit</div>
           </div>
         </div>
-        <EditComment editingComment={this.state.editComment} toggleEdit={this.toggleEditComment}
-          content={this.state.content} commentId={this.props.commentId} updateComment={this.updateComment}
+        <EditComment editingComment={this.state.editing} toggleEdit={this.toggleEdit}
+          content={this.state.content} commentId={this.props.commentId} updateComment={this.updateContent}
           postId={this.props.postId}
         />
       </div>

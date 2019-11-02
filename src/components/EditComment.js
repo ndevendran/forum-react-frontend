@@ -14,7 +14,7 @@ class EditComment extends React.Component {
     };
 
     this.handleContentChange = this.handleContentChange.bind(this);
-    this.updateComment = this.updateComment.bind(this);
+    this.postEdits = this.postEdits.bind(this);
     this.saveEdits = this.saveEdits.bind(this);
   }
 
@@ -22,7 +22,7 @@ class EditComment extends React.Component {
     this.setState({content: e.target.value});
   }
 
-  updateComment() {
+  postEdits() {
     const url = "/comment/" + this.state.postId + "/" + this.state.commentId;
     const body = {'content': this.state.content};
     try {
@@ -36,8 +36,8 @@ class EditComment extends React.Component {
   }
 
   saveEdits() {
-    const success = this.updateComment();
-    if(success === true) {
+    const success = this.postEdits();
+    if(success) {
       this.state.updateComment(this.state.content);
       this.props.toggleEdit();
     } else {

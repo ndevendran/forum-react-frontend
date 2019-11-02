@@ -10,31 +10,25 @@ class ViewPost extends React.Component {
     super(props);
 
     this.state = {
+      isLoading: false,
       postId: this.props.match.params.id,
       userPost: {},
+      avatarUrl: '',
+      editing: false,
       comments: [],
       currentComment: '',
-      isLoading: false,
-      editing: false,
-      commentFunctions: {
-        'edit': this.editComment
-      },
-      postFunctions: {
-        'edit': this.toggleEditPost
-      },
-      avatarUrl: '',
     }
 
     this.postComment = this.postComment.bind(this);
     this.updateComment = this.updateComment.bind(this);
-    this.listComments = this.listComments.bind(this);
     this.addComment = this.addComment.bind(this);
-    this.saveEdits = this.saveEdits.bind(this);
-    this.editComment = this.editComment.bind(this);
+
+    this.listComments = this.listComments.bind(this);
+    this.savePostEdits = this.savePostEdits.bind(this);
     this.toggleEditPost = this.toggleEditPost.bind(this);
   }
 
-  saveEdits(newTitle, newContent) {
+  savePostEdits(newTitle, newContent) {
     const body = {'content': newContent, 'title': newTitle};
     const url = '/forum/' + this.state.postId;
     try {
@@ -55,12 +49,11 @@ class ViewPost extends React.Component {
     this.setState({editing: !this.state.editing});
   }
 
-  toggleEditComment() {
-    this.setState({editingComment: !this.state.editingComment});
-  }
-
-  editComment() {
-    alert('To be done');
+  //TODO: Transform Comment Creation Into Promise Chain
+  updateComment(e) {
+    this.setState({
+      currentComment: e.target.value,
+    })
   }
 
   addComment(body) {
@@ -127,12 +120,6 @@ class ViewPost extends React.Component {
     }
   }
 
-  updateComment(e) {
-    this.setState({
-      currentComment: e.target.value,
-    })
-  }
-
   render() {
     if(this.state.isLoading) {
       return (
@@ -168,7 +155,7 @@ class ViewPost extends React.Component {
               <div>
                 <EditPost content={this.state.userPost.content}
                   postTitle={this.state.userPost.title}
-                  saveEdits={this.saveEdits}
+                  saveEdits={this.savePostEdits}
                   isEditing={this.state.editing}
                   toggleEditPost={this.toggleEditPost}
                   />
@@ -180,8 +167,7 @@ class ViewPost extends React.Component {
                     (comment,i) => {
                       return <Comment key={comment.commentId} createdAt={comment.createdAt}
                               username={comment.username} content={comment.content}
-                              functions={this.state.commentFunctions} postId={this.state.postId}
-                              commentId={comment.commentId}
+                              postId={this.state.postId} commentId={comment.commentId}
                               />;
                     }
                 )}
