@@ -22,28 +22,43 @@ class EditComment extends React.Component {
     this.setState({content: e.target.value});
   }
 
-  postEdits() {
+  async postEdits() {
     const url = "/comment/" + this.state.postId + "/" + this.state.commentId;
-    const body = {'content': this.state.content};
-    try {
-      const result = API.put("forum", url, {
+    const body = {'content': this.state.content, 'idToken': this.props.idToken};
+    var promise = new Promise(function(resolve, reject) {
+      var result = API.put("forum", url, {
         body: body
       });
-      return true;
-    } catch (e) {
-      return false;
-    }
+      resolve(result);
+    });
+    const result = await promise.then(function(result) {
+      return result;
+    }).catch((error) => {
+      return {status: false, error: error};
+    })
+      return result;
   }
 
-  saveEdits() {
-    const success = this.postEdits();
-    if(success) {
+  handleErrors(error) {
+    alert("There was an error: " + error );
+  }
+
+  async saveEdits() {
+    var promise = new Promise(function(resolve, reject) {
+      var result = resolve();
+      return result;
+    })
+    const success = await promise.then(this.postEdits.bind(this)).catch(this.handleErrors);
+    console.log(success);
+    if(success.status) {
       this.state.updateComment(this.state.content);
       this.props.toggleEdit();
     } else {
       alert("Update failed");
     }
   }
+
+
 
 
   render() {

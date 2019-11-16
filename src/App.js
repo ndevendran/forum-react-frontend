@@ -29,6 +29,24 @@ class App extends Component {
       }
     }
 
+    var idToken = null;
+
+    await Auth.currentAuthenticatedUser()
+      .then(function(user) {
+        //console.log(user);
+        let clientId = user.pool.clientId;
+        let keyPrefix = 'CognitoIdentityServiceProvider.' + clientId;
+        let lastAuthUserKey = keyPrefix + '.LastAuthUser';
+        let lastAuthUser = user.pool.storage[lastAuthUserKey];
+        let userKeyPrefix = keyPrefix + '.' + lastAuthUser;
+        let accessTokenKey = userKeyPrefix + '.accessToken';
+        idToken = user.pool.storage[userKeyPrefix + '.idToken'];
+        let accessToken = user.pool.storage[accessTokenKey];
+      })
+      .catch(err => console.log(err));
+
+      this.setState({idToken: idToken});
+
     this.setState({ isAuthenticating: false });
   }
 
@@ -46,7 +64,8 @@ class App extends Component {
   render() {
     const childProps = {
       isAuthenticated: this.state.isAuthenticated,
-      userHasAuthenticated: this.userHasAuthenticated
+      userHasAuthenticated: this.userHasAuthenticated,
+      idToken: this.state.idToken
     };
 
     return (

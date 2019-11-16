@@ -35,20 +35,8 @@ class UserProfile extends React.Component {
       .then(user => this.setState({username: user.username}))
       .catch(err => console.log(err));
 
-    // await Auth.currentAuthenticatedUser()
-    //   .then(function(user) {
-    //     let clientId = user.pool.clientId;
-    //     let keyPrefix = 'CognitoIdentityServiceProvider.' + clientId;
-    //     let lastAuthUserKey = keyPrefix + '.LastAuthUser';
-    //     let lastAuthUser = user.storage[lastAuthUserKey];
-    //     let userKeyPrefix = keyPrefix + '.' + lastAuthUser;
-    //     let accessTokenKey = userKeyPrefix + '.accessToken';
-    //     idToken = user.storage[userKeyPrefix + '.idToken'];
-    //     let accessToken = user.storage[accessTokenKey];
-    //   })
-    //   .catch(err => console.log(err));
-    //
-    //   this.setState({idToken: idToken});
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.decode(idToken);
 
     const avatarKey = this.state.username + '_user_avatar';
      Storage.vault.get(avatarKey)

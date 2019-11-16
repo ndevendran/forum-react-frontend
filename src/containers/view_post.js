@@ -12,9 +12,10 @@ class ViewPost extends React.Component {
     super(props);
 
     this.state = {
-      isLoading: false,
+      isLoading: true,
       postId: this.props.match.params.id,
       userPost: {},
+      likes: 0,
       avatarUrl: '',
       editing: false,
       comments: [],
@@ -25,6 +26,7 @@ class ViewPost extends React.Component {
     this.listComments = this.listComments.bind(this);
     this.savePostEdits = this.savePostEdits.bind(this);
     this.toggleEditPost = this.toggleEditPost.bind(this);
+    this.likePost = this.likePost.bind(this);
   }
 
   // Change savePostEdits into a promise chain with error handling
@@ -63,7 +65,8 @@ class ViewPost extends React.Component {
   }
 
   savePostEdits(newTitle, newContent) {
-    const body = {'content': newContent, 'title': newTitle};
+    const body = {'content': newContent, 'title': newTitle,
+                  idToken: this.state.idToken};
     var promise = new Promise(function(resolve, reject){
       resolve(body)
     });
@@ -97,6 +100,38 @@ class ViewPost extends React.Component {
     }
   }
 
+  async getPostLikes() {
+    let postId = this.state.postId;
+    let url = "/like/" + postId;
+    try {
+      return API.get("forum", url);
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+
+  async likePost() {
+    let postId = this.state.postId;
+    let url = "/like/" + postId;
+    let body = {username: this.state.poster, like: true}
+    await API.post("forum", url, {
+      body: body
+    }).then(function(data) {
+      if(data.status) {
+        var likes = this.state.likes;
+        likes++;
+        this.setState({
+          likes: likes
+        })
+      } else {
+        alert("Something went wrong");
+      }
+    }.bind(this))
+    .catch(function(error) {
+      alert(error);
+    });
+  }
+
   async componentDidMount() {
     this.state.isLoading = true;
     let postId = this.state.postId;
@@ -105,11 +140,25 @@ class ViewPost extends React.Component {
     await Auth.currentAuthenticatedUser({
       bypassCache: false,
     }).then(async user => {
-      this.setState({poster: user.username});
+      let clientId = user.pool.clientId;
+      let keyPrefix = 'CognitoIdentityServiceProvider.' + clientId;
+      let lastAuthUserKey = keyPrefix + '.LastAuthUser';
+      let lastAuthUser = user.pool.storage[lastAuthUserKey];
+      let userKeyPrefix = keyPrefix + '.' + lastAuthUser;
+      let accessTokenKey = userKeyPrefix + '.accessToken';
+      let idToken = user.pool.storage[userKeyPrefix + '.idToken'];
+      this.setState({poster: user.username, idToken: idToken});
     });
 
     try {
       const userPost = await API.get('forum', apiUrl);
+      const result = await this.getPostLikes();
+      var postLikes = 0;
+      if(result.status) {
+        postLikes = result.likes;
+      } else {
+        postLikes = 0;
+      }
       const myComments = await this.listComments();
       const avatarKey = userPost.posterUsername + '_user_avatar';
       Storage.vault.get(avatarKey)
@@ -118,6 +167,7 @@ class ViewPost extends React.Component {
       this.setState({
         userPost: userPost,
         comments: myComments,
+        likes: postLikes,
         isLoading: false
       });
     } catch(e) {
@@ -139,7 +189,7 @@ class ViewPost extends React.Component {
             <div class="postContainer">
               <div class="sidebar">
                 <img class="avatar" src={this.state.avatarUrl}></img>
-                <div class="likes">24 Likes</div>
+                <div class="likes">{this.state.likes} Likes</div>
               </div>
               <div class="innerContainer">
                 <div class="postedBy">Posted by {this.state.userPost.posterUsername} {new Date(this.state.userPost.createdAt).toLocaleString()}</div>
@@ -148,7 +198,7 @@ class ViewPost extends React.Component {
                   {this.state.userPost.content}
                 </div>
                 <div class="footer">
-                  <div>Like</div><div>Reply</div><div onClick={this.toggleEditPost}>Edit</div><div>Delete</div><div>Report</div>
+                  <div onClick={this.likePost}>Like</div><div>Reply</div><div onClick={this.toggleEditPost}>Edit</div><div>Delete</div><div>Report</div>
                 </div>
               </div>
             </div>
@@ -171,6 +221,7 @@ class ViewPost extends React.Component {
                       return <Comment key={comment.commentId} createdAt={comment.createdAt}
                               username={comment.username} content={comment.content}
                               postId={this.state.postId} commentId={comment.commentId}
+                              idToken={this.state.idToken} currentUser={this.state.poster}
                               />;
                     }
                 )}

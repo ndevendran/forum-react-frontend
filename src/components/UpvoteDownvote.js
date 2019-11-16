@@ -6,13 +6,14 @@ class UpvoteModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      upvotes: 100,
+      likes: this.props.likes,
     };
   }
   render() {
     return(
       <React.Fragment>
       <Glyphicon glyph="plus-sign" />
+      <div className="postLikes">{this.state.likes}</div>
       <Glyphicon glyph="minus-sign" />
       </React.Fragment>
     );

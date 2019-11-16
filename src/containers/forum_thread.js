@@ -23,8 +23,10 @@ class ForumThreadList extends React.Component {
     }
 
     try {
-      const allPosts = await this.getThreadList();
+      const allPosts = await this.getThreadList()
+                              .then(this.addLikes.bind(this));
       this.setState({ threads: allPosts });
+
     } catch (e) {
       alert(e);
     }
@@ -34,6 +36,24 @@ class ForumThreadList extends React.Component {
 
   getThreadList() {
     return API.get("forum", "/forum");
+  }
+
+  getPostLikes(postId) {
+    const url = "/like/" + postId;
+    return API.get("forum", url);
+  }
+
+  async addLikes(postList) {
+    for (var index in postList) {
+      const result = await this.getPostLikes(postList[index].postId);
+      if(result.status) {
+        postList[index].likes = result.likes;
+      } else {
+        postList[index].likes = 0;
+      }
+    }
+
+    return postList;
   }
 
   render() {
@@ -48,7 +68,7 @@ class ForumThreadList extends React.Component {
                   <p>{thread.content}</p><br/>
                   <h6>Created At: {new Date(thread.createdAt).toLocaleString()}</h6>
                   <h6>Created By: {thread.posterUsername}</h6><br/>
-                  <UpvoteModal />
+                  <UpvoteModal likes={thread.likes} postId={thread.postId}/>
                 </div>
             ))}
           </div>
